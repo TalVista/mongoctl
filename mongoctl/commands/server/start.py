@@ -214,9 +214,6 @@ def prepare_mongod_server(server):
     log_info("Preparing server '%s' for use as configured..." %
              server.id)
 
-    # setup the local users
-    users.setup_server_local_users(server)
-
     if not server.is_cluster_member() or server.is_config_server():
         users.setup_server_users(server)
 

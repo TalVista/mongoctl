@@ -59,29 +59,29 @@ def setup_server_users(server):
     Seeds all users returned by get_seed_users() IF there are no users seed yet
     i.e. system.users collection is empty
     """
-    """if not should_seed_users(server):
-        log_verbose("Not seeding users for server '%s'" % server.id)
-        return"""
+
+    if server.is_slave():
+        return 0
 
     log_info("Checking if there are any users that need to be added for "
              "server '%s'..." % server.id)
 
+    # Create admin users
+    count_new_users = setup_server_admin_users(server)
+
     seed_users = server.get_seed_users()
 
-    count_new_users = 0
 
     for dbname, db_seed_users in seed_users.items():
         # create the admin ones last so we won't have an auth issue
-        if (dbname == "admin"):
-            continue
-        count_new_users += setup_server_db_users(server, dbname, db_seed_users)
+        if dbname != "admin":
+            count_new_users += setup_server_db_users(server, dbname,
+                                                     db_seed_users)
 
     # Note: If server member of a replica then don't setup admin
     # users because primary server will do that at replinit
 
-    # Now create admin ones
-    if not server.is_slave():
-        count_new_users += setup_server_admin_users(server)
+
 
     if count_new_users > 0:
         log_info("Added %s users." % count_new_users)
@@ -271,37 +271,6 @@ def setup_server_admin_users(server):
         log_exception(e)
         raise MongoctlException(
             "Error while setting up admin users on server '%s'."
-            "\n Cause: %s" % (server.id, e))
-
-###############################################################################
-def setup_server_local_users(server):
-
-    seed_local_users = False
-    try:
-        local_db = server.get_db("local", retry=False)
-        if not local_db['system.users'].find_one():
-            seed_local_users = True
-    except Exception, e:
-        log_exception(e)
-        pass
-
-    if not seed_local_users:
-        log_verbose("Not seeding users for database 'local'")
-        return 0
-
-    try:
-        local_users = server.get_db_seed_users("local")
-        if server.is_auth():
-            local_users = prepend_global_admin_user(local_users, server)
-
-        if local_users:
-            return setup_db_users(server, local_db, local_users)
-        else:
-            return 0
-    except Exception, e:
-        log_exception(e)
-        raise MongoctlException(
-            "Error while setting up local users on server '%s'."
             "\n Cause: %s" % (server.id, e))
 
 ###############################################################################

@@ -262,16 +262,11 @@ class Server(DocumentWrapper):
 
     ###########################################################################
     def get_login_user(self, dbname):
-        login_user =  self.__login_users__.get(dbname)
+        login_user = self.__login_users__.get(dbname)
         # if no login user found then check global login
 
         if not login_user:
             login_user = users.get_global_login_user(self, dbname)
-
-        # if dbname is local and we cant find anything yet
-        # THEN assume that local credentials == admin credentials
-        if not login_user and dbname == "local":
-            login_user = self.get_login_user("admin")
 
         return login_user
 
@@ -383,9 +378,7 @@ class Server(DocumentWrapper):
 
         # if there is no login user for this database then use admin db unless
         # it was specified not to
-        if (not never_auth_with_admin and
-                not login_user and
-                    dbname not in ["admin", "local"]):
+        if not never_auth_with_admin and not login_user and dbname !="admin":
             # if this passes then we are authed!
             admin_db = self.get_db("admin", retry=retry)
             return admin_db.connection[dbname]
