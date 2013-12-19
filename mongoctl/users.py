@@ -146,13 +146,13 @@ def setup_db_users(server, db, db_users):
 DEV_2_6_VERSION = mongo_version.version_obj("2.5.3")
 
 ###############################################################################
-def _mongo_add_user(server, db, username, password, read_only=False,
+def _mongo_add_user(server, db, username, password, read_only=None,
                     num_tries=1):
     try:
         kwargs = {}
         version = server.get_mongo_version_obj()
         if version and version >= DEV_2_6_VERSION:
-            kwargs = _make_2_6_dev_add_user_kwargs(db, username, password)
+            kwargs = _make_2_6_dev_add_user_kwargs(db.name)
         db.add_user(username, password, read_only, **kwargs)
     except OperationFailure, ofe:
         # This is a workaround for PYTHON-407. i.e. catching a harmless
@@ -179,21 +179,12 @@ def _mongo_add_user(server, db, username, password, read_only=False,
 
 
 ###############################################################################
-def _make_2_6_dev_add_user_kwargs(db, username, password):
-    pwd_hash = pymongo.auth._password_digest(username, password)
+def _make_2_6_dev_add_user_kwargs(dbname):
+    role = "root" if dbname == "admin" else "dbAdmin"
     return {
-        "db": db.name,
         "roles": [
-            {
-                "role": "root",
-                "db": db.name,
-                "hasRole": True,
-                "canDelegate": False
-            }
-        ],
-        "credentials": {
-            "MONGODB-CR": pwd_hash
-        }
+            role
+        ]
 
     }
 
