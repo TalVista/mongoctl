@@ -259,7 +259,7 @@ def maybe_config_server_repl_set(server, rs_add=False, no_init=False):
         else:
             log_verbose("No need to initialize cluster '%s', as it has"
                         " already been initialized." % cluster.id)
-            if not cluster.is_member_configured_for(server):
+            if not server.is_member_configured():
                 if rs_add:
                     cluster.add_member_to_replica(server)
                 else:

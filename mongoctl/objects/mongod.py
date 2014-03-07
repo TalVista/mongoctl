@@ -297,7 +297,11 @@ class MongodServer(server.Server):
     def read_replicaset_name(self):
         master_result = self.is_master_command()
         if master_result:
-            return "setName" in master_result and master_result["setName"]
+            return master_result.get("setName", None)
+
+    ###########################################################################
+    def is_member_configured(self):
+        return self.read_replicaset_name() is not None
 
     ###########################################################################
     def get_repl_lag(self, master_status):
