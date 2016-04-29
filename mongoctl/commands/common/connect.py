@@ -99,8 +99,8 @@ def open_mongo_shell_to_server(server,
         else:
             database = "admin"
 
-    login_database = database if not "authenticationDatabase" in shell_options \
-        else shell_options["authenticationDatabase"]
+    login_database = shell_options["authenticationDatabase"] \
+        if "authenticationDatabase" in shell_options else database
 
     if username or server.needs_to_auth(login_database):
         # authenticate and grab a working username/password
