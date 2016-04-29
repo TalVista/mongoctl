@@ -28,6 +28,7 @@ SUPPORTED_MONGO_SHELL_OPTIONS = [
     "ipv6",
     "port",
     "authenticationDatabase",
+    "authenticationMechanism",
     "ssl",
     "sslCAFile",
     ]
@@ -151,6 +152,10 @@ def open_mongo_shell_to_uri(uri,
 
     if "authsource" in uri_wrapper.options and "authenticationDatabase" not in shell_options:
         shell_options["authenticationDatabase"] = uri_wrapper.options["authsource"]
+
+    if "authmechanism" in uri_wrapper.options and "authenticationMechanism" not in shell_options:
+        shell_options["authenticationMechanism"] = uri_wrapper.options["authmechanism"]
+
 
     server_or_cluster = repository.build_server_or_cluster_from_uri(uri)
 

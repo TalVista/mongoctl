@@ -557,6 +557,16 @@ MONGOCTL_PARSER_DEF = {
                 },
 
                 {
+                    "name": "authenticationMechanism",
+                    "type": "optional",
+                    "help": "authentication mechanism",
+                    "cmd_arg": [
+                        "--authenticationMechanism"
+                    ],
+                    "nargs": 1
+                },
+
+                {
                     "name": "ssl",
                     "type": "optional",
                     "help": "connect using encrypted channel",
