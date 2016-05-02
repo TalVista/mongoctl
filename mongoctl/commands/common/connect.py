@@ -27,6 +27,8 @@ SUPPORTED_MONGO_SHELL_OPTIONS = [
     "verbose",
     "ipv6",
     "port",
+    "authenticationDatabase",
+    "authenticationMechanism",
     "ssl",
     "sslCAFile",
     ]
@@ -97,9 +99,12 @@ def open_mongo_shell_to_server(server,
         else:
             database = "admin"
 
-    if username or server.needs_to_auth(database):
+    login_database = shell_options["authenticationDatabase"] \
+        if "authenticationDatabase" in shell_options else database
+
+    if username or server.needs_to_auth(login_database):
         # authenticate and grab a working username/password
-        username, password = server.get_working_login(database, username,
+        username, password = server.get_working_login(login_database, username,
                                                       password)
 
     do_open_mongo_shell_to(server.get_connection_address(),
@@ -144,6 +149,13 @@ def open_mongo_shell_to_uri(uri,
     database = uri_wrapper.database
     username = username if username else uri_wrapper.username
     password = password if password else uri_wrapper.password
+
+    if "authsource" in uri_wrapper.options and "authenticationDatabase" not in shell_options:
+        shell_options["authenticationDatabase"] = uri_wrapper.options["authsource"]
+
+    if "authmechanism" in uri_wrapper.options and "authenticationMechanism" not in shell_options:
+        shell_options["authenticationMechanism"] = uri_wrapper.options["authmechanism"]
+
 
     server_or_cluster = repository.build_server_or_cluster_from_uri(uri)
 

@@ -547,6 +547,26 @@ MONGOCTL_PARSER_DEF = {
                 },
 
                 {
+                    "name": "authenticationDatabase",
+                    "type": "optional",
+                    "help": "user source (defaults to dbname)",
+                    "cmd_arg": [
+                        "--authenticationDatabase"
+                    ],
+                    "nargs": 1
+                },
+
+                {
+                    "name": "authenticationMechanism",
+                    "type": "optional",
+                    "help": "authentication mechanism",
+                    "cmd_arg": [
+                        "--authenticationMechanism"
+                    ],
+                    "nargs": 1
+                },
+
+                {
                     "name": "ssl",
                     "type": "optional",
                     "help": "connect using encrypted channel",

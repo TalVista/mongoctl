@@ -81,6 +81,11 @@ class MongoUriWrapper:
         return self._uri_obj["password"]
 
     ###########################################################################
+    @property
+    def options(self):
+        return self._uri_obj["options"]
+
+    ###########################################################################
     def is_cluster_uri(self):
         return len(self.node_list) > 1
 
